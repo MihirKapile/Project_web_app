@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { register, registerThunk } from "./service";
+import { register, registerThunk } from "./user-service";
 import { useDispatch } from "react-redux";
 
 function Register() {

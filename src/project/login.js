@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login, loginThunk } from "./service";
+import { login, loginThunk } from "./user-service";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 
@@ -16,7 +16,7 @@ function Login() {
     e.preventDefault();
     // const currentUser = await login(user);
     await dispatch(loginThunk(user));
-    navigate("/project/profile");
+    navigate("/project/home");
     // console.log(currentUser);
     // setUser(currentUser);
   };

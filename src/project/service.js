@@ -1,74 +1,57 @@
 import axios from "axios";
-import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const api = axios.create({
+const request = axios.create({
   withCredentials: true,
 });
-const REACT_APP_SERVER_API_URL="http://localhost:4000"
-const USERS_API = `${process.env.REACT_APP_SERVER_API_URL}/users`;
 
-export const registerThunk = createAsyncThunk(
-  "user/register",
-  async (user) => await register(user)
-);
+const NAPSTER_API_BASE =
+  "https://napi-v2-2-cloud-run-b3gtd5nmxq-uw.a.run.app/v2.2/";
+const NAPSTER_SEARCH_API = `${NAPSTER_API_BASE}/search/verbose?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`;
+const NAPSTER_ALBUM_API = `${NAPSTER_API_BASE}/albums`;
 
-export const loginThunk = createAsyncThunk(
-  "user/login",
-  async (user) => await login(user)
-);
+const ALBUM_API = "http://localhost:4000/api/albums";
 
-export const profileThunk = createAsyncThunk(
-  "user/profile",
-  async (user) => await profile(user)
-);
-
-export const logoutThunk = createAsyncThunk(
-  "user/logout",
-  async (user) => await logout(user)
-);
-
-export const register = async (user) => {
-  const response = await api.post(`${USERS_API}/register`, user);
+export const userLikesAlbum = async (albumId, album) => {
+  const response = await request.post(`${ALBUM_API}/${albumId}/likes`, album);
   return response.data;
 };
 
-export const login = async (user) => {
-  const response = await api.post(`${USERS_API}/login`, user);
+export const getLikesForUser = async (userId) => {
+  const response = await request.get(
+    `http://localhost:4000/api/users/${userId}/likes`
+  );
   return response.data;
 };
 
-export const profile = async (user) => {
-  const response = await api.post(`${USERS_API}/profile`);
+export const getLikesForAlbum = async (albumId) => {
+  const response = await request.get(
+    `http://localhost:4000/api/albums/${albumId}/likes`
+  );
   return response.data;
 };
 
-export const logout = async (user) => {
-  const response = await api.post(`${USERS_API}/logout`);
+export const fullSearch = async (query) => {
+  const response = await axios.get(`${NAPSTER_SEARCH_API}&query=${query}`);
   return response.data;
 };
 
-export const createUser = async (user) => {
-  const response = await axios.post(USERS_API, user);
-  return response.data;
+export const getAlbum = async (albumId) => {
+  const response = await axios.get(
+    `${NAPSTER_ALBUM_API}/${albumId}?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`
+  );
+  const albums = response.data.albums;
+  if (albums.length > 0) {
+    return albums[0];
+  }
+  return {};
 };
 
-export const removeUser = async (userId) => {
-  const response = await axios.delete(`${USERS_API}/${userId}`);
-  return response.data;
+export const getAlbumTracks = async (albumId) => {
+  const response = await axios.get(
+    `${NAPSTER_ALBUM_API}/${albumId}/tracks?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`
+  );
+  return response.data.tracks;
 };
 
-export const updateUser = async (newUser) => {
-  const response = await axios.put(`${USERS_API}/${newUser._id}`, newUser);
-  return response.data;
-};
-
-export const getUsersWithRole = async (role) => {
-  const response = await axios.get(`${USERS_API}?role=${role}`);
-  return response.data;
-};
-
-export const getUsers = async () => {
-  const response = await axios.get(USERS_API);
-  return response.data;
-};
-export const getUserById = () => {};
+export const getAlbumCover = (albumId) =>
+  `https://api.napster.com/imageserver/v2/albums/${albumId}/images/400x400.jpg`;
