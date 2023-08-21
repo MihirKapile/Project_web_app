@@ -13,6 +13,14 @@ function Details() {
     const [transaction, setTransaction] = useState();
     const [currentUser, setCurrentUser] = useState({});
     const [likes, setLikes] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [reviewsDB, setReviewsDB] = useState([]);
+
+    const fetchReviews = async () => {
+        const reviewsDB = await service.getReviewsForRestaurant(id);
+        setReviewsDB(reviewsDB);
+        console.log(reviewsDB);
+    };
 
     const fetchLikes = async () => {
         const likes = await service.getLikesForRestaurant(id);
@@ -44,7 +52,16 @@ function Details() {
         fetchUser();
         fetchRestaurant();
         fetchLikes();
+        fetchReviews();
     }, []);
+
+    const handleReviewSubmit = async () => {
+        await service.userReviewsRestaurant(restaurant.id, {
+            name: restaurant.name,
+            restaurantId: restaurant.id,
+            reviews: reviews,
+    });
+    };
 
     return (
     <div>
@@ -128,6 +145,25 @@ function Details() {
                     ) : (
                         <p>Be the first reviewer!</p>
                     )}
+        </div>
+        <div style={{ marginTop: '30px' }}>
+            <h5>Submit a Review</h5>
+                {currentUser ? (
+                    <div style={{ display: 'flex',   alignItems: 'flex-end' , marginBottom: '30px'}}>
+                        <input className="form-control w-75"
+                            placeholder="Enter your review"
+                            onChange={(e) => setReviews(e.target.value)}
+                            style={{ height: '150px' }}
+                        />
+                        <button onClick={handleReviewSubmit}
+                                className="btn btn-primary float-end"
+                        >Submit
+                        </button>
+                    </div>
+
+                ):(
+                    <Link to={`/project/login`}>Login to submit a review!</Link>
+                )}
         </div>
     </div>
     );

@@ -48,3 +48,24 @@ export const getRestaurant = async (id) => {
   const restaurants = response.data;
   return restaurants;
 };
+
+export const userReviewsRestaurant = async (restaurantId, restaurant) => {
+
+  const response = await api.post(`${RESTAURANT_API}/${restaurantId}/reviews`, restaurant);
+  console.log("response", response);
+  return response.data;
+};
+
+export const getReviewsForUser = async (userId) => {
+  const response = await api.get(
+    `http://localhost:4000/api/users/${userId}/reviews`
+  );
+  return response.data;
+};
+
+export const getReviewsForRestaurant = async (restaurantId) => {
+  const response = await api.get(
+    `http://localhost:4000/api/restaurants/${restaurantId}/reviews`
+  );
+  return response.data;
+};
