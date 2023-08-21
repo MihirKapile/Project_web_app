@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { profile, logout, profileThunk, logoutThunk } from "./user-service";
+import { profile, logout, profileThunk, logoutThunk,getUsers,removeUser,getUsersWithRole } from "./user-service";
 import * as service from "./service";
 import * as userService from "./user-service";
 import { Link } from "react-router-dom";
@@ -18,6 +18,9 @@ function Profile() {
   const [canFollow, setCanFollow] = useState(currentUser.canFollow || true);
   const [canSeeFollowers, setCanSeeFollowers] = useState(currentUser.canSeeFollowers || true);
   const [canSeeReviews, setCanSeeReviews] = useState(currentUser.canSeeReviews || true);
+  const [users, setUsers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const userRole = 'admin';
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -27,6 +30,32 @@ function Profile() {
     setIsModalOpen(false);
     setNewFirstName("");
     setNewLastName("");
+  };
+
+  const openModal1 = () => {
+    setShowModal(true);
+  };
+
+  const closeModal1 = () => {
+    setShowModal(false);
+  };
+  const fetchUsers = async () => {
+    try {
+      const usersData = await getUsers();
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    try {
+      await removeUser(userId);
+      fetchUsers();
+      setShowModal(false); // Close the modal after deletion
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   const updateUserName = async (newFirstName, newLastName) => {
@@ -112,6 +141,7 @@ function Profile() {
   };
   useEffect(() => {
     fetchUser();
+    fetchUsers();
   }, [canFollow, canSeeFollowers, canSeeReviews]);
 
   const navigate = useNavigate();
@@ -212,7 +242,31 @@ function Profile() {
               </div>
           ))}
       </div>
-    </div>
+      <hr/>
+      {currentUser.role === userRole && (
+
+              <button className="btn btn-danger" onClick={openModal1}>Delete Users</button>
+      )}
+            <Modal
+              isOpen={showModal}
+              onRequestClose={closeModal1}
+              contentLabel="Users Modal"
+            >
+              <h2>All Users</h2>
+              <ul>
+                {users.map((user) => (
+                  user._id !== currentUser._id && (
+                    <li key={user._id}>
+                      {user.firstName} {user.lastName}: {user.role} &nbsp;&nbsp;
+                      <button className="btn btn-danger" onClick={() => deleteUser(user._id)}>Delete</button>
+                    </li>
+                  )
+                ))}
+              </ul>
+              <button className="btn btn-warning" onClick={closeModal1}>Close</button>
+            </Modal>
+      </div>
+
   );
 }
 
