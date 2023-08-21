@@ -1,57 +1,50 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const request = axios.create({
+const api = axios.create({
   withCredentials: true,
 });
 
-const NAPSTER_API_BASE =
-  "https://napi-v2-2-cloud-run-b3gtd5nmxq-uw.a.run.app/v2.2/";
-const NAPSTER_SEARCH_API = `${NAPSTER_API_BASE}/search/verbose?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`;
-const NAPSTER_ALBUM_API = `${NAPSTER_API_BASE}/albums`;
+const YELP_API_BASE = 'http://localhost:4000/proxy/yelp';
+const REACT_APP_SERVER_API_URL="http://localhost:4000"
+const USERS_API = `${process.env.REACT_APP_SERVER_API_URL}/users`;
 
-const ALBUM_API = "http://localhost:4000/api/albums";
+const YELP_RESTAURANT_API = `${YELP_API_BASE}/restaurants`;
+const RESTAURANT_API = "http://localhost:4000/api/restaurants";
 
-export const userLikesAlbum = async (albumId, album) => {
-  const response = await request.post(`${ALBUM_API}/${albumId}/likes`, album);
+export const userLikesRestaurant = async (restaurantId, restaurant) => {
+  const response = await api.post(`${RESTAURANT_API}/${restaurantId}/likes`, restaurant);
+  console.log("response", response);
   return response.data;
 };
 
 export const getLikesForUser = async (userId) => {
-  const response = await request.get(
+  const response = await api.get(
     `http://localhost:4000/api/users/${userId}/likes`
   );
   return response.data;
 };
 
-export const getLikesForAlbum = async (albumId) => {
-  const response = await request.get(
-    `http://localhost:4000/api/albums/${albumId}/likes`
+export const getLikesForRestaurant = async (restaurantId) => {
+  const response = await api.get(
+    `http://localhost:4000/api/restaurants/${restaurantId}/likes`
   );
   return response.data;
 };
 
 export const fullSearch = async (query) => {
-  const response = await axios.get(`${NAPSTER_SEARCH_API}&query=${query}`);
+  const params = {
+      location: query,
+      sort_by: 'best_match',
+    };
+  const response = await axios.get(YELP_API_BASE, { params });
   return response.data;
-};
+}
 
-export const getAlbum = async (albumId) => {
+export const getRestaurant = async (id) => {
   const response = await axios.get(
-    `${NAPSTER_ALBUM_API}/${albumId}?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`
+    `${YELP_API_BASE}/${id}`
   );
-  const albums = response.data.albums;
-  if (albums.length > 0) {
-    return albums[0];
-  }
-  return {};
+  const restaurants = response.data;
+  return restaurants;
 };
-
-export const getAlbumTracks = async (albumId) => {
-  const response = await axios.get(
-    `${NAPSTER_ALBUM_API}/${albumId}/tracks?apikey=${process.env.REACT_APP_NAPSTER_API_KEY}`
-  );
-  return response.data.tracks;
-};
-
-export const getAlbumCover = (albumId) =>
-  `https://api.napster.com/imageserver/v2/albums/${albumId}/images/400x400.jpg`;

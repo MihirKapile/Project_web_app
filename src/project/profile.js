@@ -43,8 +43,9 @@ function Profile() {
   return (
     <div>
       <h1>Profile</h1>
-      <pre>{JSON.stringify(currentUser, null, 2)}</pre>
-      <button onClick={handleLogout}>Logout</button>
+      <h3>{currentUser.firstName}   {currentUser.lastName}</h3>
+      <h4>{currentUser.role}</h4>
+      <button className="btn btn-warning" onClick={handleLogout}>Logout</button>
       <hr />
       <h3>People I follow</h3>
       <div className="list-group">
@@ -57,7 +58,6 @@ function Profile() {
           </Link>
         ))}
       </div>
-      <pre>{JSON.stringify(followed, null, 2)}</pre>
       <hr />
       <h3>Restaurants I like</h3>
       <div className="list-group">
@@ -66,11 +66,10 @@ function Profile() {
             className="list-group-item"
             to={`/project/details/${like.restaurantId}`}
           >
-            {like.album.name}
+            {like.restaurant.name}
           </Link>
         ))}
       </div>
-      <pre>{JSON.stringify(likes, null, 2)}</pre>
     </div>
   );
 }

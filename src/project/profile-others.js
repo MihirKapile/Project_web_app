@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import * as service from "./user-service";
+import { Link } from "react-router-dom";
 
 function ProfileOthers() {
   const { userId } = useParams();
   const [user, setUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [followers, setFollowers] = useState([]);
-
+  const fullNames = followers.map(entry => `${entry.follower.firstName} ${entry.follower.lastName}`);
   const fetchUser = async () => {
     const user = await service.getUserById(userId);
     setUser(user);
   };
+
 
   const fetchFollowers = async () => {
     const followers = await service.getFollowerUsers(userId);
@@ -29,12 +32,20 @@ function ProfileOthers() {
   return (
     <div>
       <h1>
-        Someone elses profile
-        <button onClick={followUser} className="float-end">
-          Follow
-        </button>
+        <h3>{user.firstName} {user.lastName}</h3>
+        <h4> {user.role} </h4>
+        <button onClick={followUser} className="btn btn-primary float-end">
+                      Follow
+                    </button>
+
       </h1>
-      <pre>{JSON.stringify(followers, null, 2)}</pre>
+      <br/>
+      <h3> Followers </h3>
+      <div className="list-group">
+            {fullNames.map((fullName, index) => (
+              <h5 className="list-group-item" key={index}>{fullName}</h5>
+            ))}
+      </div>
     </div>
   );
 }
