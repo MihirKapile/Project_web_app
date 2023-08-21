@@ -32,6 +32,10 @@ function ProfileOthers() {
   return (
     <div>
       <h1>
+      <img src={user.avatar} width="50" style={{
+                                                borderRadius: '50%',
+                                                marginBottom: '10px'
+                                            }}/>
         <h3>{user.firstName} {user.lastName}</h3>
         <h4> {user.role} </h4>
         <button onClick={followUser} className="btn btn-primary float-end">

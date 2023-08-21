@@ -43,6 +43,10 @@ function Profile() {
   return (
     <div>
       <h1>Profile</h1>
+      <img src={currentUser.avatar} width="50" style={{
+                                          borderRadius: '50%',
+                                          marginBottom: '10px'
+                                      }}/>
       <h3>{currentUser.firstName}   {currentUser.lastName}</h3>
       <h4>{currentUser.role}</h4>
       <button className="btn btn-warning" onClick={handleLogout}>Logout</button>
